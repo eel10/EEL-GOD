@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>학급 청소당번 뽑기</title>
+    <title>급식 정보 조회</title>
     <style>
         * {
             margin: 0;
@@ -16,219 +16,298 @@
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
         }
 
         .container {
+            max-width: 600px;
+            margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 500px;
-            width: 100%;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .description {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-
-        .draw-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 30px;
-        }
-
-        .draw-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-
-        .draw-button:active {
-            transform: translateY(0);
-        }
-
-        .results {
-            margin-top: 30px;
-        }
-
-        .results h2 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 22px;
-        }
-
-        .selected-numbers {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .number-card {
-            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
-            color: #2d3436;
-            padding: 15px 20px;
             border-radius: 15px;
-            font-size: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
             font-weight: bold;
-            min-width: 60px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            animation: fadeInUp 0.5s ease forwards;
-            opacity: 0;
-            transform: translateY(20px);
+            color: #333;
         }
 
-        .number-card:nth-child(1) { animation-delay: 0.1s; }
-        .number-card:nth-child(2) { animation-delay: 0.2s; }
-        .number-card:nth-child(3) { animation-delay: 0.3s; }
-        .number-card:nth-child(4) { animation-delay: 0.4s; }
-        .number-card:nth-child(5) { animation-delay: 0.5s; }
-        .number-card:nth-child(6) { animation-delay: 0.6s; }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
         }
 
-        .hidden {
-            display: none;
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #4ECDC4;
         }
 
-        .drawing {
-            color: #667eea;
-            font-size: 18px;
-            font-weight: bold;
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .reset-button {
-            background: #636e72;
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
             color: white;
             border: none;
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-size: 14px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #666;
+        }
+
+        .meal-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #4ECDC4;
+        }
+
+        .meal-info h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .meal-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .meal-item h4 {
+            color: #FF6B6B;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .meal-item ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .meal-item li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .meal-item li:last-child {
+            border-bottom: none;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #c62828;
             margin-top: 20px;
         }
 
-        .reset-button:hover {
-            background: #2d3436;
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🧹 봉담중학교 1학년 10반 학급 청소당번 뽑기</h1>
-        <div class="description">
-            1번부터 30번까지 중에서<br>
-            랜덤으로 6명을 선발합니다
+        <div class="header">
+            <h1>🍽️ 급식 정보</h1>
+            <p>원하는 날짜의 급식 메뉴를 확인하세요</p>
         </div>
         
-        <button class="draw-button" onclick="drawNumbers()">
-            청소당번 뽑기!
-        </button>
-
-        <div class="drawing hidden" id="drawingMessage">
-            뽑는 중...
-        </div>
-
-        <div class="results hidden" id="results">
-            <h2>🎯 선발된 청소당번</h2>
-            <div class="selected-numbers" id="selectedNumbers">
+        <div class="content">
+            <div class="input-group">
+                <label for="mealDate">날짜 선택:</label>
+                <input type="date" id="mealDate" required>
             </div>
-            <button class="reset-button" onclick="reset()">
-                다시 뽑기
+            
+            <button class="btn" id="searchBtn" onclick="getMealInfo()">
+                급식 정보 조회
             </button>
+            
+            <div id="loading" class="loading" style="display: none;">
+                급식 정보를 가져오는 중...
+            </div>
+            
+            <div id="result"></div>
         </div>
     </div>
 
     <script>
-        function drawNumbers() {
-            const drawButton = document.querySelector('.draw-button');
-            const drawingMessage = document.getElementById('drawingMessage');
-            const results = document.getElementById('results');
-            const selectedNumbers = document.getElementById('selectedNumbers');
+        // 오늘 날짜를 기본값으로 설정
+        document.getElementById('mealDate').valueAsDate = new Date();
 
-            // 버튼 비활성화 및 뽑는 중 메시지 표시
-            drawButton.disabled = true;
-            drawButton.style.opacity = '0.6';
-            drawingMessage.classList.remove('hidden');
-            results.classList.add('hidden');
-
-            // 1.5초 후 결과 표시
-            setTimeout(() => {
-                // 1부터 30까지의 숫자 배열 생성
-                const numbers = Array.from({length: 30}, (_, i) => i + 1);
+        async function getMealInfo() {
+            const dateInput = document.getElementById('mealDate');
+            const searchBtn = document.getElementById('searchBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            if (!dateInput.value) {
+                alert('날짜를 선택해주세요.');
+                return;
+            }
+            
+            // 날짜 형식 변환 (YYYY-MM-DD -> YYYYMMDD)
+            const selectedDate = dateInput.value.replace(/-/g, '');
+            
+            // UI 상태 변경
+            searchBtn.disabled = true;
+            loading.style.display = 'block';
+            result.innerHTML = '';
+            
+            try {
+                // NEIS API 호출
+                const apiUrl = `https://open.neis.go.kr/hub/mealServiceDietInfo?ATPT_OFCDC_SC_CODE=J10&SD_SCHUL_CODE=7679111&MLSV_YMD=${selectedDate}`;
                 
-                // 피셔-예이츠 셔플 알고리즘으로 배열을 섞음
-                for (let i = numbers.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+                const response = await fetch(apiUrl);
+                const xmlText = await response.text();
+                
+                // XML 파싱
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+                
+                // 에러 체크
+                const errorElement = xmlDoc.querySelector('RESULT CODE');
+                if (errorElement && errorElement.textContent !== 'INFO-000') {
+                    throw new Error('급식 정보를 찾을 수 없습니다.');
                 }
                 
-                // 처음 6개 숫자를 선택하고 정렬
-                const selected = numbers.slice(0, 6).sort((a, b) => a - b);
+                // 급식 정보 추출
+                const rows = xmlDoc.querySelectorAll('row');
                 
-                // 결과 표시
-                selectedNumbers.innerHTML = '';
-                selected.forEach(num => {
-                    const card = document.createElement('div');
-                    card.className = 'number-card';
-                    card.textContent = `${num}번`;
-                    selectedNumbers.appendChild(card);
+                if (rows.length === 0) {
+                    result.innerHTML = '<div class="no-data">해당 날짜에 급식 정보가 없습니다.</div>';
+                    return;
+                }
+                
+                let mealHtml = '<div class="meal-info"><h3>📅 ' + formatDate(dateInput.value) + ' 급식 정보</h3>';
+                
+                rows.forEach(row => {
+                    const mealType = row.querySelector('MMEAL_SC_NM')?.textContent || '급식';
+                    const dishNames = row.querySelector('DDISH_NM')?.textContent || '';
+                    const calories = row.querySelector('CAL_INFO')?.textContent || '';
+                    const nutrition = row.querySelector('NTR_INFO')?.textContent || '';
+                    
+                    mealHtml += '<div class="meal-item">';
+                    mealHtml += '<h4>' + mealType + '</h4>';
+                    
+                    if (dishNames) {
+                        const dishes = dishNames.split('<br/>').filter(dish => dish.trim());
+                        mealHtml += '<ul>';
+                        dishes.forEach(dish => {
+                            // 알레르기 정보 제거 (숫자와 점 제거)
+                            const cleanDish = dish.replace(/\d+\./g, '').trim();
+                            if (cleanDish) {
+                                mealHtml += '<li>' + cleanDish + '</li>';
+                            }
+                        });
+                        mealHtml += '</ul>';
+                    }
+                    
+                    if (calories) {
+                        mealHtml += '<p><strong>칼로리:</strong> ' + calories + '</p>';
+                    }
+                    
+                    mealHtml += '</div>';
                 });
-
-                // UI 업데이트
-                drawingMessage.classList.add('hidden');
-                results.classList.remove('hidden');
-                drawButton.disabled = false;
-                drawButton.style.opacity = '1';
-            }, 1500);
+                
+                mealHtml += '</div>';
+                result.innerHTML = mealHtml;
+                
+            } catch (error) {
+                console.error('Error:', error);
+                result.innerHTML = '<div class="error">❌ ' + error.message + '<br>네트워크 연결을 확인하거나 다른 날짜를 시도해보세요.</div>';
+            } finally {
+                searchBtn.disabled = false;
+                loading.style.display = 'none';
+            }
         }
-
-        function reset() {
-            const results = document.getElementById('results');
-            results.classList.add('hidden');
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+            const weekday = weekdays[date.getDay()];
+            
+            return `${year}년 ${month}월 ${day}일 (${weekday})`;
         }
-
-        // 엔터 키로도 뽑기 가능
-        document.addEventListener('keypress', function(e) {
+        
+        // Enter 키로 검색
+        document.getElementById('mealDate').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                const drawButton = document.querySelector('.draw-button');
-                if (!drawButton.disabled) {
-                    drawNumbers();
-                }
+                getMealInfo();
             }
         });
     </script>
